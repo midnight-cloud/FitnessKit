@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_trainings"
+        android:title="@string/trainings"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:id="@+id/action_bids"
+        android:title="@string/bids"
+        android:icon="@drawable/ic_check" />
+    <item android:id="@+id/action_add"
+        android:title="@string/add"
+        android:icon="@drawable/ic_add" />
+    <item android:id="@+id/action_chat"
+        android:title="@string/chat"
+        android:icon="@drawable/ic_chat" />
+    <item android:id="@+id/action_more"
+        android:title="@string/more"
+        android:icon="@drawable/ic_more" />
+</menu>
