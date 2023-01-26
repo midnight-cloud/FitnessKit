@@ -1,5 +1,6 @@
 package com.example.fitnesskit.presentation.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitnesskit.R
 import com.example.fitnesskit.databinding.FragmentMainBinding
 import com.example.fitnesskit.presentation.adapters.TrainingAdapter
+import com.example.fitnesskit.presentation.appComponent
 import com.example.fitnesskit.presentation.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MainFragment : Fragment() {
 
@@ -22,8 +25,14 @@ class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
-    private val adapter by lazy { TrainingAdapter(requireContext()) }
+//    private val adapter by lazy { TrainingAdapter(requireContext()) }
+    @Inject
+    lateinit var adapter : TrainingAdapter
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        context.appComponent.inject(this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }

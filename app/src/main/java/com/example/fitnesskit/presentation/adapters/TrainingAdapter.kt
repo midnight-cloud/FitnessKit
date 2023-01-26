@@ -11,8 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fitnesskit.R
 import com.example.fitnesskit.databinding.RvItemTrainingBinding
 import com.example.fitnesskit.domain.models.TrainingModel
+import javax.inject.Inject
 
-class TrainingAdapter (private val context: Context) :
+class TrainingAdapter @Inject constructor (private val context: Context) :
     ListAdapter<TrainingModel, TrainingAdapter.TrainingViewHolder>(TrainingDiffCallback()) {
 
     var onItemClickListener: ((TrainingModel) -> Unit)? = null
