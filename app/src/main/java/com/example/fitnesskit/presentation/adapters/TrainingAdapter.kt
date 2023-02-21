@@ -10,19 +10,19 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fitnesskit.R
 import com.example.fitnesskit.databinding.RvItemTrainingBinding
-import com.example.fitnesskit.domain.models.TrainingModel
+import com.example.fitnesskit.domain.models.Lesson
 import javax.inject.Inject
 
 class TrainingAdapter @Inject constructor (private val context: Context) :
-    ListAdapter<TrainingModel, TrainingAdapter.TrainingViewHolder>(TrainingDiffCallback()) {
+    ListAdapter<Lesson, TrainingAdapter.TrainingViewHolder>(TrainingDiffCallback()) {
 
-    var onItemClickListener: ((TrainingModel) -> Unit)? = null
+    var onItemClickListener: ((Lesson) -> Unit)? = null
 
     inner class TrainingViewHolder(private val binding: RvItemTrainingBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bindItem(item: TrainingModel, dateVisibility: Boolean) {
+        fun bindItem(item: Lesson, dateVisibility: Boolean) {
 
-            if (item.countVisitors > 1) {
+            if (item.available_slots > 1) {
                 binding.view.setBackgroundColor(
                     ContextCompat.getColor(
                         context,
@@ -38,6 +38,7 @@ class TrainingAdapter @Inject constructor (private val context: Context) :
                 )
             }
 
+            //TODO("date")
             binding.tvDate.text = item.date
             binding.tvDate.visibility = when (dateVisibility) {
                 true -> View.VISIBLE
@@ -45,19 +46,22 @@ class TrainingAdapter @Inject constructor (private val context: Context) :
             }
 
 
-            binding.tvTimeStart.text = item.timeStart
-            binding.tvTimeEnd.text = item.timeEnd
-            binding.tvTitle.text = item.title
-            if (item.countVisitors > 1) {
+            binding.tvTimeStart.text = item.startTime
+            binding.tvTimeEnd.text = item.endTime
+            binding.tvTitle.text = item.name
+            //TODO("name")
+            if (item.available_slots > 1) {
                 binding.icCountUser.setImageResource(R.drawable.ic_users)
-                binding.tvVisitors.text = "Записано ${item.countVisitors}"
+                binding.tvVisitors.text = "Записано ${item.available_slots}"
             } else {
                 binding.icCountUser.setImageResource(R.drawable.ic_user)
-                binding.tvVisitors.text = item.trainer
+                binding.tvVisitors.text = item.coach_id
             }
 
             binding.tvPlace.text = item.place
-            binding.tvDuration.text = item.duration
+
+            binding.tvDuration.text = item.endTime
+            //TODO("time")
         }
 
 
@@ -89,11 +93,11 @@ class TrainingAdapter @Inject constructor (private val context: Context) :
 
 }
 
-class TrainingDiffCallback : DiffUtil.ItemCallback<TrainingModel>() {
-    override fun areItemsTheSame(oldItem: TrainingModel, newItem: TrainingModel) =
-        oldItem.id == newItem.id
+class TrainingDiffCallback : DiffUtil.ItemCallback<Lesson>() {
+    override fun areItemsTheSame(oldItem: Lesson, newItem: Lesson) =
+        oldItem.tab_id == newItem.tab_id
 
-    override fun areContentsTheSame(oldItem: TrainingModel, newItem: TrainingModel) =
+    override fun areContentsTheSame(oldItem: Lesson, newItem: Lesson) =
         oldItem == newItem
 
 }

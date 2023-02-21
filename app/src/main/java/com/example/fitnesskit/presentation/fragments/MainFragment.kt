@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitnesskit.R
@@ -15,6 +14,7 @@ import com.example.fitnesskit.presentation.adapters.TrainingAdapter
 import com.example.fitnesskit.presentation.appComponent
 import com.example.fitnesskit.presentation.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,16 +23,17 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MainViewModel by activityViewModels()
-
-//    private val adapter by lazy { TrainingAdapter(requireContext()) }
     @Inject
-    lateinit var adapter : TrainingAdapter
+    lateinit var viewModel: MainViewModel
+
+    @Inject
+    lateinit var adapter: TrainingAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         context.appComponent.inject(this)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -40,7 +41,7 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMainBinding.inflate(inflater)
         return binding.root
     }
@@ -53,8 +54,9 @@ class MainFragment : Fragment() {
     private fun init() {
         initRV()
         viewLifecycleOwner.lifecycleScope.launch {
+            delay(1000)
             viewModel.data.collect {
-                adapter.submitList(it)
+                adapter.submitList(it[0].lessons)
             }
         }
     }
@@ -65,7 +67,7 @@ class MainFragment : Fragment() {
         adapter.onItemClickListener = {
             Snackbar.make(
                 requireActivity().findViewById(R.id.main_fragment),
-                "Clicked ${it.title}",
+                "Clicked ${it.name}",
                 Snackbar.LENGTH_SHORT
             ).show()
         }
