@@ -2,6 +2,8 @@
 
 Тестовое задание
 
-Kotlin MVVM StateFlow ListAdapter Dagger2
+Kotlin MVVM Fragments Retrofit StateFlow ListAdapter Dagger2
 
-![image](https://user-images.githubusercontent.com/86518548/214525274-82917c7d-6b4f-4d2a-8ec5-a037888453b2.png)
+
+![Screenshot_20230222_163303_FitnessKit](https://user-images.githubusercontent.com/86518548/220608748-ff20b754-6f5c-4bc4-ad35-f725d4627b63.jpg)
+
