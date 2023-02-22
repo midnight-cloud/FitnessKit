@@ -2,6 +2,7 @@ package com.example.fitnesskit.data.di
 
 import com.example.fitnesskit.data.network.NetworkApi
 import com.example.fitnesskit.data.network.RetrofitHelper
+import com.example.fitnesskit.data.network.TrainingRepoImpl
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -23,6 +24,10 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofitServices(retrofit: Retrofit) : NetworkApi =
+    fun provideRetrofitServices(retrofit: Retrofit): NetworkApi =
         retrofit.create(NetworkApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideNetworkApiRepository(api: NetworkApi): TrainingRepoImpl = TrainingRepoImpl(api)
 }

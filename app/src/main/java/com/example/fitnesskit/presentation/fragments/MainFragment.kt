@@ -2,6 +2,7 @@ package com.example.fitnesskit.presentation.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,6 @@ import com.example.fitnesskit.presentation.adapters.TrainingAdapter
 import com.example.fitnesskit.presentation.appComponent
 import com.example.fitnesskit.presentation.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,14 +49,21 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
+        Log.d("MAIN_TAG", "main loaded")
     }
 
     private fun init() {
         initRV()
         viewLifecycleOwner.lifecycleScope.launch {
-            delay(1000)
-            viewModel.data.collect {
-                adapter.submitList(it[0].lessons)
+            viewModel.loading.collect {
+                if (!it) {
+                    binding.progressBar.visibility = View.GONE
+                    viewModel.data.collect {
+                        adapter.submitList(it[0].lessons)
+                    }
+                } else {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
             }
         }
     }

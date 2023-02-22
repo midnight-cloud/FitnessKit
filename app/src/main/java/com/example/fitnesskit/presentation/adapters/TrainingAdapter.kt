@@ -11,15 +11,43 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fitnesskit.R
 import com.example.fitnesskit.databinding.RvItemTrainingBinding
 import com.example.fitnesskit.domain.models.Lesson
+import com.example.fitnesskit.domain.models.Tab
+import com.example.fitnesskit.domain.models.Trainer
+import com.example.fitnesskit.presentation.viewmodels.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
-class TrainingAdapter @Inject constructor (private val context: Context) :
+class TrainingAdapter @Inject constructor(
+    private val context: Context,
+    private val viewModel: MainViewModel
+) :
     ListAdapter<Lesson, TrainingAdapter.TrainingViewHolder>(TrainingDiffCallback()) {
 
     var onItemClickListener: ((Lesson) -> Unit)? = null
+    private lateinit var tabList: List<Tab>
+    private lateinit var trainerList: List<Trainer>
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.tab.collectLatest {
+                tabList = it
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.trainer.collectLatest {
+                trainerList = it
+            }
+        }
+    }
 
     inner class TrainingViewHolder(private val binding: RvItemTrainingBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bindItem(item: Lesson, dateVisibility: Boolean) {
 
             if (item.available_slots > 1) {
@@ -39,7 +67,7 @@ class TrainingAdapter @Inject constructor (private val context: Context) :
             }
 
             //TODO("date")
-            binding.tvDate.text = item.date
+            binding.tvDate.text = getFormatedDate(item.date)
             binding.tvDate.visibility = when (dateVisibility) {
                 true -> View.VISIBLE
                 false -> View.GONE
@@ -48,20 +76,27 @@ class TrainingAdapter @Inject constructor (private val context: Context) :
 
             binding.tvTimeStart.text = item.startTime
             binding.tvTimeEnd.text = item.endTime
-            binding.tvTitle.text = item.name
-            //TODO("name")
+
+            tabList.forEach {
+                if (item.tab_id == it.id){
+                    binding.tvTitle.text = it.name
+                }
+            }
+
             if (item.available_slots > 1) {
                 binding.icCountUser.setImageResource(R.drawable.ic_users)
                 binding.tvVisitors.text = "Записано ${item.available_slots}"
             } else {
                 binding.icCountUser.setImageResource(R.drawable.ic_user)
-                binding.tvVisitors.text = item.coach_id
+                trainerList.forEach {
+                    if (it.id == item.coach_id)
+                        binding.tvVisitors.text = it.name
+                }
             }
 
             binding.tvPlace.text = item.place
 
-            binding.tvDuration.text = item.endTime
-            //TODO("time")
+            binding.tvDuration.text = getTimeDifference(item.startTime, item.endTime)
         }
 
 
@@ -87,10 +122,26 @@ class TrainingAdapter @Inject constructor (private val context: Context) :
             holder.bindItem(item, true)
         }
         holder.itemView.setOnClickListener {
-            onItemClickListener?.invoke(item)
+            onItemClickListener?.invoke(currentList[0])
         }
     }
 
+}
+
+private fun getTimeDifference(t1: String, t2: String): String {
+    val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val time1 = dateFormat.parse(t1)
+    val time2 = dateFormat.parse(t2)
+    val diff = (time2!!.time - time1!!.time) / 1000
+    return ("${diff / 3600}ч. ${(diff - (3600 * (diff / 3600))) / 60}мин.")
+}
+
+private fun getFormatedDate(date: String): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val res = dateFormat.parse(date)
+    val newDateFormat = SimpleDateFormat("EEEE, dd MMMM", Locale.getDefault())
+    val newRes = newDateFormat.format(res!!)
+    return newRes
 }
 
 class TrainingDiffCallback : DiffUtil.ItemCallback<Lesson>() {
