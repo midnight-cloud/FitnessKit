@@ -66,40 +66,26 @@ class TrainingAdapter @Inject constructor(
                 )
             }
 
-            //TODO("date")
             binding.tvDate.text = getFormatedDate(item.date)
             binding.tvDate.visibility = when (dateVisibility) {
                 true -> View.VISIBLE
                 false -> View.GONE
             }
 
-
             binding.tvTimeStart.text = item.startTime
             binding.tvTimeEnd.text = item.endTime
-
-            tabList.forEach {
-                if (item.tab_id == it.id){
-                    binding.tvTitle.text = it.name
-                }
-            }
+            binding.tvTitle.text = getTabName(item.tab_id)
 
             if (item.available_slots > 1) {
                 binding.icCountUser.setImageResource(R.drawable.ic_users)
                 binding.tvVisitors.text = "Записано ${item.available_slots}"
             } else {
                 binding.icCountUser.setImageResource(R.drawable.ic_user)
-                trainerList.forEach {
-                    if (it.id == item.coach_id)
-                        binding.tvVisitors.text = it.name
-                }
+                binding.tvVisitors.text = getTrainerName(item.coach_id)
             }
-
             binding.tvPlace.text = item.place
-
             binding.tvDuration.text = getTimeDifference(item.startTime, item.endTime)
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingViewHolder {
@@ -126,22 +112,40 @@ class TrainingAdapter @Inject constructor(
         }
     }
 
-}
+    private fun getTabName(item: Int): String {
+        var res = ""
+        tabList.forEach {
+            if (item == it.id) {
+                res = it.name
+            }
+        }
+        return res
+    }
 
-private fun getTimeDifference(t1: String, t2: String): String {
-    val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val time1 = dateFormat.parse(t1)
-    val time2 = dateFormat.parse(t2)
-    val diff = (time2!!.time - time1!!.time) / 1000
-    return ("${diff / 3600}ч. ${(diff - (3600 * (diff / 3600))) / 60}мин.")
-}
+    private fun getTrainerName(item: String): String {
+        var res = ""
+        trainerList.forEach {
+            if (it.id == item)
+                res = it.name
+        }
+        return res
+    }
 
-private fun getFormatedDate(date: String): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val res = dateFormat.parse(date)
-    val newDateFormat = SimpleDateFormat("EEEE, dd MMMM", Locale.getDefault())
-    val newRes = newDateFormat.format(res!!)
-    return newRes
+    private fun getTimeDifference(t1: String, t2: String): String {
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val time1 = dateFormat.parse(t1)
+        val time2 = dateFormat.parse(t2)
+        val diff = (time2!!.time - time1!!.time) / 1000
+        return ("${diff / 3600}ч. ${(diff - (3600 * (diff / 3600))) / 60}мин.")
+    }
+
+    private fun getFormatedDate(date: String): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val res = dateFormat.parse(date)
+        val newDateFormat = SimpleDateFormat("EEEE, dd MMMM", Locale.getDefault())
+        val newRes = newDateFormat.format(res!!)
+        return newRes
+    }
 }
 
 class TrainingDiffCallback : DiffUtil.ItemCallback<Lesson>() {
@@ -150,5 +154,4 @@ class TrainingDiffCallback : DiffUtil.ItemCallback<Lesson>() {
 
     override fun areContentsTheSame(oldItem: Lesson, newItem: Lesson) =
         oldItem == newItem
-
 }
